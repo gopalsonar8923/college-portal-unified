@@ -27,7 +27,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { cn, formatDateForInput, formatTimeForInput } from "@/lib/utils";
-import { ScheduledEvent } from "@/types";
+import { ScheduledEvent, ClassType } from "@/types";
 import { CLASS_OPTIONS, EVENT_TYPES, SUBJECTS } from "@/lib/constants";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
@@ -45,8 +45,8 @@ const formSchema = z.object({
   startTime: z.string(),
   end: z.date(),
   endTime: z.string(),
-  class: z.string().optional(),
-  subject: z.string().optional(),
+  class: z.string().optional().nullable(),
+  subject: z.string().optional().nullable(),
   description: z.string().optional(),
 });
 
@@ -63,8 +63,8 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
       startTime: formatTimeForInput(startDate),
       end: endDate,
       endTime: formatTimeForInput(endDate),
-      class: event?.class || "",
-      subject: event?.subject || "",
+      class: event?.class || null,
+      subject: event?.subject || null,
       description: event?.description || "",
     },
   });
@@ -87,8 +87,8 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
       type: data.type as any,
       start: startDateTime.toISOString(),
       end: endDateTime.toISOString(),
-      class: data.class,
-      subject: data.subject,
+      class: data.class as ClassType | undefined,
+      subject: data.subject || undefined,
       description: data.description,
     });
   };
@@ -255,7 +255,10 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Class</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value || ""}>
+                  <Select 
+                    onValueChange={field.onChange} 
+                    value={field.value || ""} 
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select class" />
@@ -281,7 +284,10 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Subject</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value || ""}>
+                    <Select 
+                      onValueChange={field.onChange} 
+                      value={field.value || ""} 
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select subject" />
