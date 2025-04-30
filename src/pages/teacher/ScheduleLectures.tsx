@@ -8,7 +8,7 @@ import { Calendar as CalendarIcon, Clock } from "lucide-react";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { getEvents } from "@/lib/storage";
 import { useAuth } from "@/contexts/AuthContext";
-import { ScheduledEvent } from "@/types";
+import { ScheduledEvent, ClassType } from "@/types";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 
@@ -24,9 +24,9 @@ const ScheduleLecturesPage = () => {
       const teacherEvents = getEvents().filter(
         event => 
           event.type === "lecture" && 
-          user.classes && // Add null check
-          event.class && // Add null check for event.class
-          user.classes.includes(event.class)
+          user.classes && 
+          event.class && 
+          user.classes.includes(event.class as ClassType)
       );
       
       setLectures(teacherEvents);

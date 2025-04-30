@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
@@ -7,7 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { format } from "date-fns";
 import { toast } from "sonner";
-import { getStudentsByClass, addAttendance, getAttendanceByClass } from "@/lib/storage";
+import { getStudentsByClass, addAttendance, getAttendanceByClass, deleteAttendance } from "@/lib/storage";
 import { Student, Attendance } from "@/types";
 
 const MarkAttendancePage = () => {
@@ -69,8 +70,11 @@ const MarkAttendancePage = () => {
   const handleSubmit = () => {
     try {
       // Delete existing attendance records if any
-      // Since we don't have a deleteAttendance function, we'll just overwrite them
-      // Below when we add the new attendance records
+      if (existingAttendance.length > 0) {
+        existingAttendance.forEach(record => {
+          deleteAttendance(record.id);
+        });
+      }
       
       // Add new attendance records
       students.forEach(student => {
