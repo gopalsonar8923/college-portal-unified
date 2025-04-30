@@ -24,7 +24,9 @@ const ScheduleLecturesPage = () => {
       const teacherEvents = getEvents().filter(
         event => 
           event.type === "lecture" && 
-          user.classes?.includes(event.class || "")
+          user.classes && // Add null check
+          event.class && // Add null check for event.class
+          user.classes.includes(event.class)
       );
       
       setLectures(teacherEvents);
@@ -35,6 +37,10 @@ const ScheduleLecturesPage = () => {
   }, [user]);
 
   const handleMarkAttendance = (lecture: ScheduledEvent) => {
+    if (!lecture.class || !lecture.subject) {
+      return;
+    }
+    
     navigate("/mark-attendance", { 
       state: { 
         lectureId: lecture.id,

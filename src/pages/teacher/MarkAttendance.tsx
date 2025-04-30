@@ -71,7 +71,7 @@ const MarkAttendancePage = () => {
       // Delete existing attendance records if any
       if (existingAttendance.length > 0) {
         existingAttendance.forEach(record => {
-          // Note: We're not actually deleting here, just overwriting below
+          deleteAttendance(record.id);
         });
       }
       
