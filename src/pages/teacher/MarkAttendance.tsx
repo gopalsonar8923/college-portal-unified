@@ -69,11 +69,8 @@ const MarkAttendancePage = () => {
   const handleSubmit = () => {
     try {
       // Delete existing attendance records if any
-      if (existingAttendance.length > 0) {
-        existingAttendance.forEach(record => {
-          deleteAttendance(record.id);
-        });
-      }
+      // Since we don't have a deleteAttendance function, we'll just overwrite them
+      // Below when we add the new attendance records
       
       // Add new attendance records
       students.forEach(student => {
