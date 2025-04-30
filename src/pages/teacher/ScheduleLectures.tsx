@@ -11,6 +11,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { ScheduledEvent, ClassType } from "@/types";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
+import { toast } from "sonner";
 
 const ScheduleLecturesPage = () => {
   const [lectures, setLectures] = useState<ScheduledEvent[]>([]);
@@ -26,7 +27,7 @@ const ScheduleLecturesPage = () => {
           event.type === "lecture" && 
           user.classes && 
           event.class && 
-          user.classes.includes(event.class as ClassType)
+          user.classes.includes(event.class)
       );
       
       setLectures(teacherEvents);
@@ -38,6 +39,7 @@ const ScheduleLecturesPage = () => {
 
   const handleMarkAttendance = (lecture: ScheduledEvent) => {
     if (!lecture.class || !lecture.subject) {
+      toast.error("Missing lecture information");
       return;
     }
     

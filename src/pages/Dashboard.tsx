@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
@@ -8,6 +7,8 @@ import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { getEvents, getStudents, getResults, getHallTickets, getAttendance } from "@/lib/storage";
 import { cn } from "@/lib/utils";
+import { Calendar as CalendarIcon, Book, Users, Clock } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -18,7 +19,8 @@ export default function Dashboard() {
     classes: 0,
     attendance: 0,
     results: 0,
-    hallTickets: 0
+    hallTickets: 0,
+    todaysLectures: 0
   });
 
   useEffect(() => {
@@ -31,12 +33,24 @@ export default function Dashboard() {
       classes: 0,
       attendance: 0,
       results: 0,
-      hallTickets: 0
+      hallTickets: 0,
+      todaysLectures: 0
     };
 
     const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
     const upcomingEvents = events.filter(event => new Date(event.start) > now);
     relevantStats.upcomingEvents = upcomingEvents.length;
+    
+    // Calculate today's lectures
+    const todaysLectures = events.filter(event => {
+      const eventDate = new Date(event.start);
+      return eventDate >= today && eventDate < tomorrow && event.type === "lecture";
+    });
+    relevantStats.todaysLectures = todaysLectures.length;
 
     if (user?.role === ROLE.ADMIN) {
       const students = getStudents();
@@ -161,7 +175,7 @@ export default function Dashboard() {
     <>
       <h1 className="text-3xl font-bold mb-6">Teacher Dashboard</h1>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-2xl">{stats.students}</CardTitle>
@@ -172,6 +186,12 @@ export default function Dashboard() {
           <CardHeader className="pb-2">
             <CardTitle className="text-2xl">{stats.classes}</CardTitle>
             <CardDescription>Assigned Classes</CardDescription>
+          </CardHeader>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-2xl">{stats.todaysLectures}</CardTitle>
+            <CardDescription>Today's Lectures</CardDescription>
           </CardHeader>
         </Card>
         <Card>
@@ -188,36 +208,56 @@ export default function Dashboard() {
             <CardTitle>Quick Actions</CardTitle>
             <CardDescription>Common teaching tasks</CardDescription>
           </CardHeader>
-          <CardContent className="grid grid-cols-2 gap-2">
-            <Button variant="outline" className="justify-start" asChild>
-              <a href="/schedule-lectures">Schedule Lectures</a>
+          <CardContent className="grid grid-cols-1 gap-2">
+            <Button className="justify-start" asChild>
+              <Link to="/schedule-lectures" className="flex items-center">
+                <Book className="mr-2" />
+                View Lecture Schedule
+              </Link>
             </Button>
             <Button variant="outline" className="justify-start" asChild>
-              <a href="/mark-attendance">Mark Attendance</a>
+              <Link to="/mark-attendance" className="flex items-center">
+                <Users className="mr-2" />
+                Mark Attendance
+              </Link>
             </Button>
             <Button variant="outline" className="justify-start" asChild>
-              <a href="/attendance-reports">View Reports</a>
+              <Link to="/attendance-reports" className="flex items-center">
+                <Clock className="mr-2" />
+                View Attendance Reports
+              </Link>
             </Button>
             <Button variant="outline" className="justify-start" asChild>
-              <a href="/calendar">View Calendar</a>
+              <Link to="/calendar" className="flex items-center">
+                <CalendarIcon className="mr-2" />
+                View Calendar
+              </Link>
             </Button>
           </CardContent>
         </Card>
         
         <Card className="col-span-1">
           <CardHeader>
-            <CardTitle>Calendar</CardTitle>
-            <CardDescription>Events this month</CardDescription>
+            <CardTitle>Today's Lectures</CardTitle>
+            <CardDescription>Your scheduled sessions</CardDescription>
           </CardHeader>
           <CardContent>
-            <Calendar
-              mode="single"
-              className={cn("rounded-md border", "p-3 pointer-events-auto")}
-            />
-            <div className="mt-4 flex justify-end">
-              <Button variant="outline" size="sm" asChild>
-                <a href="/calendar">View Full Calendar</a>
-              </Button>
+            {stats.todaysLectures === 0 ? (
+              <p className="text-muted-foreground">No lectures scheduled for today.</p>
+            ) : (
+              <div className="space-y-2">
+                <Button className="w-full justify-center" asChild>
+                  <Link to="/schedule-lectures">
+                    View Today's {stats.todaysLectures} Lecture{stats.todaysLectures > 1 ? 's' : ''}
+                  </Link>
+                </Button>
+              </div>
+            )}
+            <div className="mt-4">
+              <Calendar
+                mode="single"
+                className={cn("rounded-md border", "p-3 pointer-events-auto")}
+              />
             </div>
           </CardContent>
         </Card>
