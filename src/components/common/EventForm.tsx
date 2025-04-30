@@ -116,7 +116,7 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Event Type</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select event type" />
@@ -257,7 +257,7 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
                   <FormLabel>Class</FormLabel>
                   <Select 
                     onValueChange={field.onChange} 
-                    value={field.value || ""} 
+                    value={field.value || undefined} 
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -286,7 +286,7 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
                     <FormLabel>Subject</FormLabel>
                     <Select 
                       onValueChange={field.onChange} 
-                      value={field.value || ""} 
+                      value={field.value || undefined} 
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -299,7 +299,7 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
                             {subject}
                           </SelectItem>
                         )) || (
-                          <SelectItem value="" disabled>
+                          <SelectItem value="no-subjects" disabled>
                             No subjects available
                           </SelectItem>
                         )}
