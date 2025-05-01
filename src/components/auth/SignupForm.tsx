@@ -67,6 +67,12 @@ export function SignupForm() {
         data.role as Role
       );
       if (success) {
+        // Provide specific guidance based on role
+        if (data.role === ROLE.STUDENT) {
+          toast.info("You've been assigned to First Year BSc class by default. An administrator can update this later.");
+        } else if (data.role === ROLE.TEACHER) {
+          toast.info("An administrator will need to assign your teaching classes after login.");
+        }
         navigate("/login");
       }
     } catch (error) {

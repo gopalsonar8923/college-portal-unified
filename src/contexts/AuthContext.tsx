@@ -3,6 +3,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Role, User } from "@/types";
 import { ROLE } from "@/lib/constants";
+import { addStudent } from "@/lib/storage";
 
 // Mock storage functionality until integrated with a backend
 const USER_STORAGE_KEY = "college_portal_user";
@@ -114,6 +115,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return false;
       }
 
+      // For student role, determine a default class (using first year BSc as default)
+      const defaultClass = role === ROLE.STUDENT ? "fy-bsc" : undefined;
+
       const newUser = {
         id: `user_${Date.now()}`,
         name,
@@ -121,11 +125,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         password,
         role,
         classes: role === ROLE.TEACHER ? [] : undefined,
-        class: role === ROLE.STUDENT ? "" : undefined
+        class: role === ROLE.STUDENT ? defaultClass : undefined
       };
 
       // Add new user to storage
       localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify([...users, newUser]));
+      
+      // Additionally, if it's a student, add them to the students collection
+      if (role === ROLE.STUDENT && defaultClass) {
+        // Add to students collection for visibility in admin/teacher interfaces
+        addStudent({
+          name,
+          email,
+          class: defaultClass,
+          age: 18, // Default age
+          mobile: ""
+        });
+      }
       
       toast.success("Registration successful. Please login.");
       return true;
