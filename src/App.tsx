@@ -11,6 +11,7 @@ import { ROLE } from "@/lib/constants";
 // Auth Pages
 import LoginPage from "@/pages/auth/Login";
 import SignupPage from "@/pages/auth/Signup";
+import Index from "@/pages/Index";
 
 // Dashboard Pages
 import DashboardPage from "@/pages/Dashboard";
@@ -51,7 +52,7 @@ const App = () => (
         <AuthProvider>
           <Routes>
             {/* Auth Routes */}
-            <Route path="/" element={<Navigate to="/login" replace />} />
+            <Route path="/" element={<Index />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
 
@@ -71,48 +72,94 @@ const App = () => (
               element={<ProtectedRoute element={<ManageStudentsPage />} allowedRoles={[ROLE.ADMIN]} />} 
             />
             <Route 
-              path="/schedule-lectures" 
+              path="/admin/schedule-lectures" 
               element={<ProtectedRoute element={<ScheduleLecturesPage />} allowedRoles={[ROLE.ADMIN]} />} 
             />
             <Route 
-              path="/results" 
+              path="/admin/results" 
               element={<ProtectedRoute element={<AdminResultsPage />} allowedRoles={[ROLE.ADMIN]} />} 
             />
             <Route 
-              path="/hall-tickets" 
+              path="/admin/hall-tickets" 
               element={<ProtectedRoute element={<AdminHallTicketsPage />} allowedRoles={[ROLE.ADMIN]} />} 
             />
             <Route 
-              path="/attendance-reports" 
+              path="/admin/attendance-reports" 
               element={<ProtectedRoute element={<AdminAttendanceReportsPage />} allowedRoles={[ROLE.ADMIN]} />} 
+            />
+            
+            {/* To support existing URLs */}
+            <Route 
+              path="/schedule-lectures" 
+              element={<ProtectedRoute element={<Navigate to="/admin/schedule-lectures" replace />} allowedRoles={[ROLE.ADMIN]} />} 
+            />
+            <Route 
+              path="/results" 
+              element={<ProtectedRoute element={<Navigate to="/admin/results" replace />} allowedRoles={[ROLE.ADMIN]} />} 
+            />
+            <Route 
+              path="/hall-tickets" 
+              element={<ProtectedRoute element={<Navigate to="/admin/hall-tickets" replace />} allowedRoles={[ROLE.ADMIN]} />} 
+            />
+            <Route 
+              path="/attendance-reports" 
+              element={<ProtectedRoute element={<Navigate to="/admin/attendance-reports" replace />} allowedRoles={[ROLE.ADMIN]} />} 
             />
 
             {/* Teacher Routes */}
             <Route 
-              path="/schedule-lectures" 
+              path="/teacher/schedule-lectures" 
               element={<ProtectedRoute element={<TeacherScheduleLecturesPage />} allowedRoles={[ROLE.TEACHER]} />} 
             />
             <Route 
-              path="/mark-attendance" 
+              path="/teacher/mark-attendance" 
               element={<ProtectedRoute element={<MarkAttendancePage />} allowedRoles={[ROLE.TEACHER]} />} 
             />
             <Route 
-              path="/attendance-reports" 
+              path="/teacher/attendance-reports" 
               element={<ProtectedRoute element={<TeacherAttendanceReportsPage />} allowedRoles={[ROLE.TEACHER]} />} 
+            />
+            
+            {/* To support existing URLs */}
+            <Route 
+              path="/schedule-lectures" 
+              element={<ProtectedRoute element={<Navigate to="/teacher/schedule-lectures" replace />} allowedRoles={[ROLE.TEACHER]} />} 
+            />
+            <Route 
+              path="/mark-attendance" 
+              element={<ProtectedRoute element={<Navigate to="/teacher/mark-attendance" replace />} allowedRoles={[ROLE.TEACHER]} />} 
+            />
+            <Route 
+              path="/attendance-reports" 
+              element={<ProtectedRoute element={<Navigate to="/teacher/attendance-reports" replace />} allowedRoles={[ROLE.TEACHER]} />} 
             />
 
             {/* Student Routes */}
             <Route 
-              path="/view-attendance" 
+              path="/student/view-attendance" 
               element={<ProtectedRoute element={<ViewAttendancePage />} allowedRoles={[ROLE.STUDENT]} />} 
             />
             <Route 
-              path="/results" 
+              path="/student/results" 
               element={<ProtectedRoute element={<StudentResultsPage />} allowedRoles={[ROLE.STUDENT]} />} 
             />
             <Route 
-              path="/hall-tickets" 
+              path="/student/hall-tickets" 
               element={<ProtectedRoute element={<StudentHallTicketsPage />} allowedRoles={[ROLE.STUDENT]} />} 
+            />
+            
+            {/* To support existing URLs */}
+            <Route 
+              path="/view-attendance" 
+              element={<ProtectedRoute element={<Navigate to="/student/view-attendance" replace />} allowedRoles={[ROLE.STUDENT]} />} 
+            />
+            <Route 
+              path="/results" 
+              element={<ProtectedRoute element={<Navigate to="/student/results" replace />} allowedRoles={[ROLE.STUDENT]} />} 
+            />
+            <Route 
+              path="/hall-tickets" 
+              element={<ProtectedRoute element={<Navigate to="/student/hall-tickets" replace />} allowedRoles={[ROLE.STUDENT]} />} 
             />
 
             {/* Shared Routes */}

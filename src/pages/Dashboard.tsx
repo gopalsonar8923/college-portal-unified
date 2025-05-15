@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
@@ -130,22 +131,22 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent className="grid grid-cols-2 gap-2">
             <Button variant="outline" className="justify-start" asChild>
-              <a href="/manage-students">Manage Students</a>
+              <Link to="/manage-students">Manage Students</Link>
             </Button>
             <Button variant="outline" className="justify-start" asChild>
-              <a href="/manage-teachers">Manage Teachers</a>
+              <Link to="/manage-teachers">Manage Teachers</Link>
             </Button>
             <Button variant="outline" className="justify-start" asChild>
-              <a href="/schedule-lectures">Schedule Lectures</a>
+              <Link to="/admin/schedule-lectures">Schedule Lectures</Link>
             </Button>
             <Button variant="outline" className="justify-start" asChild>
-              <a href="/results">Manage Results</a>
+              <Link to="/admin/results">Manage Results</Link>
             </Button>
             <Button variant="outline" className="justify-start" asChild>
-              <a href="/hall-tickets">Manage Hall Tickets</a>
+              <Link to="/admin/hall-tickets">Manage Hall Tickets</Link>
             </Button>
             <Button variant="outline" className="justify-start" asChild>
-              <a href="/attendance-reports">Attendance Reports</a>
+              <Link to="/admin/attendance-reports">Attendance Reports</Link>
             </Button>
           </CardContent>
         </Card>
@@ -162,7 +163,7 @@ export default function Dashboard() {
             />
             <div className="mt-4 flex justify-end">
               <Button variant="outline" size="sm" asChild>
-                <a href="/calendar">View Full Calendar</a>
+                <Link to="/calendar">View Full Calendar</Link>
               </Button>
             </div>
           </CardContent>
@@ -210,19 +211,19 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent className="grid grid-cols-1 gap-2">
             <Button className="justify-start" asChild>
-              <Link to="/schedule-lectures" className="flex items-center">
+              <Link to="/teacher/schedule-lectures" className="flex items-center">
                 <Book className="mr-2" />
                 View Lecture Schedule
               </Link>
             </Button>
             <Button variant="outline" className="justify-start" asChild>
-              <Link to="/mark-attendance" className="flex items-center">
+              <Link to="/teacher/mark-attendance" className="flex items-center">
                 <Users className="mr-2" />
                 Mark Attendance
               </Link>
             </Button>
             <Button variant="outline" className="justify-start" asChild>
-              <Link to="/attendance-reports" className="flex items-center">
+              <Link to="/teacher/attendance-reports" className="flex items-center">
                 <Clock className="mr-2" />
                 View Attendance Reports
               </Link>
@@ -247,7 +248,7 @@ export default function Dashboard() {
             ) : (
               <div className="space-y-2">
                 <Button className="w-full justify-center" asChild>
-                  <Link to="/schedule-lectures">
+                  <Link to="/teacher/schedule-lectures">
                     View Today's {stats.todaysLectures} Lecture{stats.todaysLectures > 1 ? 's' : ''}
                   </Link>
                 </Button>
@@ -298,16 +299,16 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent className="grid grid-cols-2 gap-2">
             <Button variant="outline" className="justify-start" asChild>
-              <a href="/view-attendance">View Attendance</a>
+              <Link to="/student/view-attendance">View Attendance</Link>
             </Button>
             <Button variant="outline" className="justify-start" asChild>
-              <a href="/results">Check Results</a>
+              <Link to="/student/results">Check Results</Link>
             </Button>
             <Button variant="outline" className="justify-start" asChild>
-              <a href="/hall-tickets">Hall Tickets</a>
+              <Link to="/student/hall-tickets">Hall Tickets</Link>
             </Button>
             <Button variant="outline" className="justify-start" asChild>
-              <a href="/calendar">Academic Calendar</a>
+              <Link to="/calendar">Academic Calendar</Link>
             </Button>
           </CardContent>
         </Card>
@@ -324,7 +325,7 @@ export default function Dashboard() {
             />
             <div className="mt-4 flex justify-end">
               <Button variant="outline" size="sm" asChild>
-                <a href="/calendar">View Full Calendar</a>
+                <Link to="/calendar">View Full Calendar</Link>
               </Button>
             </div>
           </CardContent>

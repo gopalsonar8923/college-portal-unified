@@ -3,12 +3,11 @@ import { useState, useEffect } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Calendar as CalendarIcon, Clock } from "lucide-react";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { getEvents } from "@/lib/storage";
 import { useAuth } from "@/contexts/AuthContext";
-import { ScheduledEvent, ClassType } from "@/types";
+import { ScheduledEvent } from "@/types";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { toast } from "sonner";
@@ -43,7 +42,7 @@ const ScheduleLecturesPage = () => {
       return;
     }
     
-    navigate("/mark-attendance", { 
+    navigate("/teacher/mark-attendance", { 
       state: { 
         lectureId: lecture.id,
         className: lecture.class,
