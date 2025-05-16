@@ -1,8 +1,9 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Role, User } from "@/types";
+import { Role, User, Student } from "@/types";
 import { ROLE } from "@/lib/constants";
+import { addStudent } from "@/lib/storage";
 
 // Mock storage functionality until integrated with a backend
 const USER_STORAGE_KEY = "college_portal_user";
@@ -128,6 +129,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       // Add new user to storage
       localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify([...users, newUser]));
+      
+      // If this is a student, also add to the students list
+      if (newUser.role === ROLE.STUDENT && newUser.class) {
+        const studentData: Omit<Student, "id"> = {
+          name: newUser.name,
+          email: newUser.email,
+          class: newUser.class,
+          mobile: newUser.mobile || ""
+        };
+        
+        addStudent(studentData);
+      }
       
       toast.success(`New ${userData.role} added successfully.`);
       return true;
