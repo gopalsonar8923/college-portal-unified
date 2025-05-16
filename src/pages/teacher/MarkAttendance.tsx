@@ -24,7 +24,7 @@ const MarkAttendancePage = () => {
   useEffect(() => {
     if (!className || !subject || !date) {
       toast.error("Missing lecture information");
-      navigate("/schedule-lectures");
+      navigate("/teacher/schedule-lectures");
       return;
     }
 
@@ -83,12 +83,13 @@ const MarkAttendancePage = () => {
           subject,
           class: className,
           studentId: student.id,
-          present: attendance[student.id] || false
+          present: attendance[student.id] || false,
+          lectureId: lectureId
         });
       });
       
       toast.success("Attendance marked successfully!");
-      navigate("/schedule-lectures");
+      navigate("/teacher/schedule-lectures");
     } catch (error) {
       console.error("Error marking attendance:", error);
       toast.error("Failed to mark attendance");
@@ -156,7 +157,7 @@ const MarkAttendancePage = () => {
           </CardContent>
           
           <CardFooter className="flex justify-between">
-            <Button variant="outline" onClick={() => navigate("/schedule-lectures")}>
+            <Button variant="outline" onClick={() => navigate("/teacher/schedule-lectures")}>
               Cancel
             </Button>
             <Button onClick={handleSubmit}>

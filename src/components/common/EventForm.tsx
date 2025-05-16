@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { cn, formatDateForInput, formatTimeForInput } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { ScheduledEvent, ClassType } from "@/types";
 import { CLASS_OPTIONS, EVENT_TYPES, SUBJECTS } from "@/lib/constants";
 import { CalendarIcon } from "lucide-react";
@@ -48,6 +48,27 @@ const formSchema = z.object({
   class: z.string().optional().nullable(),
   subject: z.string().optional().nullable(),
   description: z.string().optional(),
+}).refine(data => {
+  if (data.type === 'lecture' || data.type === 'exam') {
+    return !!data.class && !!data.subject;
+  }
+  return true;
+}, {
+  message: "Class and subject are required for lectures and exams",
+  path: ["class"],
+}).refine(data => {
+  const startDateTime = new Date(data.start);
+  const [startHours, startMinutes] = data.startTime.split(":").map(Number);
+  startDateTime.setHours(startHours || 0, startMinutes || 0);
+  
+  const endDateTime = new Date(data.end);
+  const [endHours, endMinutes] = data.endTime.split(":").map(Number);
+  endDateTime.setHours(endHours || 0, endMinutes || 0);
+  
+  return endDateTime > startDateTime;
+}, {
+  message: "End time must be after start time",
+  path: ["endTime"]
 });
 
 export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
@@ -72,6 +93,10 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
   const eventType = form.watch("type");
   const selectedClass = form.watch("class");
 
+  function formatTimeForInput(date: Date): string {
+    return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+  }
+
   const handleSubmit = (data: z.infer<typeof formSchema>) => {
     // Combine date and time for start and end
     const startDateTime = new Date(data.start);
@@ -90,6 +115,19 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
       class: data.class as ClassType | undefined,
       subject: data.subject || undefined,
       description: data.description,
+    });
+
+    // Reset form after successful submission
+    form.reset({
+      title: "",
+      type: "lecture",
+      start: new Date(),
+      startTime: formatTimeForInput(new Date()),
+      end: new Date(),
+      endTime: formatTimeForInput(new Date()),
+      class: null,
+      subject: null,
+      description: "",
     });
   };
   
