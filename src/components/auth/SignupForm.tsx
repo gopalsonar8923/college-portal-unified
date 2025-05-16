@@ -43,7 +43,7 @@ type FormData = z.infer<typeof formSchema>;
 
 export function SignupForm() {
   const navigate = useNavigate();
-  const { signup } = useAuth();
+  const { addUser } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<FormData>({
@@ -60,12 +60,18 @@ export function SignupForm() {
   const onSubmit = async (data: FormData) => {
     setIsLoading(true);
     try {
-      const success = await signup(
-        data.name, 
-        data.email, 
-        data.password, 
-        data.role as Role
-      );
+      // Create user object with appropriate structure
+      const userData = {
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        role: data.role as Role,
+        classes: data.role === ROLE.TEACHER ? [] : undefined,
+        class: data.role === ROLE.STUDENT ? "fy-bsc" : undefined
+      };
+      
+      const success = await addUser(userData);
+      
       if (success) {
         // Provide specific guidance based on role
         if (data.role === ROLE.STUDENT) {
