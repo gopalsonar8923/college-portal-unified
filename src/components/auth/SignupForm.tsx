@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -184,8 +184,8 @@ export function SignupForm() {
         </Form>
       </CardContent>
       <CardFooter className="flex justify-center">
-        <Button variant="link" onClick={() => navigate("/login")}>
-          Already have an account? Login
+        <Button variant="link" asChild>
+          <Link to="/login">Already have an account? Login</Link>
         </Button>
       </CardFooter>
     </Card>

@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,6 +9,7 @@ import { ROLE } from "@/lib/constants";
 
 // Auth Pages
 import LoginPage from "@/pages/auth/Login";
+import SignupPage from "@/pages/auth/Signup";
 import Index from "@/pages/Index";
 
 // Dashboard Pages
@@ -53,6 +53,7 @@ const App = () => (
             {/* Auth Routes */}
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
 
             {/* Dashboard */}
             <Route 

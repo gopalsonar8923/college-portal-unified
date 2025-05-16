@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ROLE } from "@/lib/constants";
 import { useAuth } from "@/contexts/AuthContext";
 import { Role } from "@/types";
@@ -133,6 +133,11 @@ export function LoginForm() {
           </form>
         </Form>
       </CardContent>
+      <CardFooter className="flex justify-center">
+        <Button variant="link" asChild>
+          <Link to="/signup">Don't have an account? Sign up</Link>
+        </Button>
+      </CardFooter>
     </Card>
   );
 }
