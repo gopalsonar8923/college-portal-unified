@@ -23,7 +23,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { InfoIcon } from "lucide-react";
 import { ROLE } from "@/lib/constants";
 import { useAuth } from "@/contexts/AuthContext";
 import { Role } from "@/types";
@@ -74,6 +76,18 @@ export function LoginForm() {
         </CardDescription>
       </CardHeader>
       <CardContent>
+        <Alert className="mb-4">
+          <InfoIcon className="h-4 w-4" />
+          <AlertDescription>
+            Use the following test credentials:
+            <ul className="list-disc pl-5 mt-2 space-y-1">
+              <li><strong>Admin:</strong> admin@spdm.edu / admin123</li>
+              <li><strong>Teacher:</strong> teacher@spdm.edu / teacher123</li>
+              <li><strong>Student:</strong> student@spdm.edu / student123</li>
+            </ul>
+          </AlertDescription>
+        </Alert>
+        
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
@@ -133,11 +147,6 @@ export function LoginForm() {
           </form>
         </Form>
       </CardContent>
-      <CardFooter className="flex justify-center">
-        <Button variant="link" onClick={() => navigate("/signup")}>
-          Don't have an account? Sign up
-        </Button>
-      </CardFooter>
     </Card>
   );
 }

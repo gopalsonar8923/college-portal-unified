@@ -10,7 +10,6 @@ import { ROLE } from "@/lib/constants";
 
 // Auth Pages
 import LoginPage from "@/pages/auth/Login";
-import SignupPage from "@/pages/auth/Signup";
 import Index from "@/pages/Index";
 
 // Dashboard Pages
@@ -54,7 +53,6 @@ const App = () => (
             {/* Auth Routes */}
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignupPage />} />
 
             {/* Dashboard */}
             <Route 

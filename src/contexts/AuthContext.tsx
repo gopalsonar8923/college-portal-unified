@@ -3,7 +3,6 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Role, User } from "@/types";
 import { ROLE } from "@/lib/constants";
-import { addStudent } from "@/lib/storage";
 
 // Mock storage functionality until integrated with a backend
 const USER_STORAGE_KEY = "college_portal_user";
@@ -45,7 +44,6 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   login: (email: string, password: string, role: Role) => Promise<boolean>;
-  signup: (name: string, email: string, password: string, role: Role) => Promise<boolean>;
   logout: () => void;
   getUsers: (role?: Role) => any[];
   addUser: (user: any) => Promise<boolean>;
@@ -101,53 +99,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     } catch (error) {
       console.error("Login error:", error);
       toast.error("An error occurred during login.");
-      return false;
-    }
-  };
-
-  const signup = async (name: string, email: string, password: string, role: Role) => {
-    try {
-      const users = getUsers();
-      
-      // Check if user with this email already exists
-      if (users.some((u: any) => u.email === email)) {
-        toast.error("User with this email already exists.");
-        return false;
-      }
-
-      // For student role, determine a default class (using first year BSc as default)
-      const defaultClass = role === ROLE.STUDENT ? "fy-bsc" : undefined;
-
-      const newUser = {
-        id: `user_${Date.now()}`,
-        name,
-        email,
-        password,
-        role,
-        classes: role === ROLE.TEACHER ? [] : undefined,
-        class: role === ROLE.STUDENT ? defaultClass : undefined
-      };
-
-      // Add new user to storage
-      localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify([...users, newUser]));
-      
-      // Additionally, if it's a student, add them to the students collection
-      if (role === ROLE.STUDENT && defaultClass) {
-        // Add to students collection for visibility in admin/teacher interfaces
-        addStudent({
-          name,
-          email,
-          class: defaultClass,
-          age: 18, // Default age
-          mobile: ""
-        });
-      }
-      
-      toast.success("Registration successful. Please login.");
-      return true;
-    } catch (error) {
-      console.error("Signup error:", error);
-      toast.error("An error occurred during registration.");
       return false;
     }
   };
@@ -233,7 +184,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       user, 
       loading, 
       login, 
-      signup, 
       logout,
       getUsers,
       addUser,
