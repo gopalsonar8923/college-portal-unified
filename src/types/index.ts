@@ -38,6 +38,7 @@ export interface Attendance {
   subject: string;
   present: boolean;
   class: ClassType;
+  lectureId?: string;  // Added lectureId as an optional property
 }
 
 export interface Result {
