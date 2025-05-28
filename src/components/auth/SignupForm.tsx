@@ -74,7 +74,8 @@ export function SignupForm() {
   const onSubmit = async (data: FormData) => {
     setIsLoading(true);
     try {
-      // Create user object with appropriate structure
+      console.log("Submitting signup form with data:", { ...data, password: "[HIDDEN]" });
+      
       const userData = {
         name: data.name,
         email: data.email,
@@ -85,13 +86,12 @@ export function SignupForm() {
         mobile: data.mobile || ""
       };
       
+      console.log("User data to be added:", { ...userData, password: "[HIDDEN]" });
+      
       const success = await addUser(userData);
       
       if (success) {
-        // Provide specific guidance based on role
-        if (data.role === ROLE.TEACHER) {
-          toast.info("An administrator will need to assign your teaching classes after login.");
-        }
+        toast.success(`Account created successfully! Please login to continue.`);
         navigate("/login");
       }
     } catch (error) {

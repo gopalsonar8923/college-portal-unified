@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Role, User, Student } from "@/types";
@@ -107,13 +106,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const logout = () => {
     localStorage.removeItem(USER_STORAGE_KEY);
     setUser(null);
-    // Instead of navigate, we'll use window.location for navigation
     window.location.href = "/login";
     toast.info("You have been logged out.");
   };
 
   const addUser = async (userData: any) => {
     try {
+      console.log("AuthContext: Adding user with data:", { ...userData, password: "[HIDDEN]" });
+      
       const users = getUsers();
       
       // Check if user with this email already exists
@@ -127,11 +127,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         ...userData
       };
 
+      console.log("AuthContext: New user object:", { ...newUser, password: "[HIDDEN]" });
+
       // Add new user to storage
-      localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify([...users, newUser]));
+      const updatedUsers = [...users, newUser];
+      localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(updatedUsers));
+      
+      console.log("AuthContext: User added to users list");
       
       // If this is a student, also add to the students list
       if (newUser.role === ROLE.STUDENT && newUser.class) {
+        console.log("AuthContext: Adding student to students list");
+        
         const studentData: Omit<Student, "id"> = {
           name: newUser.name,
           email: newUser.email,
@@ -139,14 +146,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           mobile: newUser.mobile || ""
         };
         
-        addStudent(studentData);
+        const addedStudent = addStudent(studentData);
+        console.log("AuthContext: Student added to storage:", addedStudent);
       }
       
-      toast.success(`New ${userData.role} added successfully.`);
+      toast.success(`New ${userData.role} account created successfully.`);
       return true;
     } catch (error) {
       console.error("Add user error:", error);
-      toast.error("An error occurred while adding the user.");
+      toast.error("An error occurred while creating the account.");
       return false;
     }
   };

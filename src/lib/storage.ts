@@ -1,4 +1,3 @@
-
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "sonner";
 import { 
@@ -39,7 +38,9 @@ function setItems<T>(key: string, items: T[]): void {
 
 // Students
 export function getStudents(): Student[] {
-  return getItems<Student>(STORAGE_KEYS.STUDENTS);
+  const students = getItems<Student>(STORAGE_KEYS.STUDENTS);
+  console.log("Storage: Retrieved students:", students);
+  return students;
 }
 
 export function getStudentById(id: string): Student | undefined {
@@ -47,17 +48,26 @@ export function getStudentById(id: string): Student | undefined {
 }
 
 export function getStudentsByClass(classType: string): Student[] {
-  return getStudents().filter(student => student.class === classType);
+  const students = getStudents().filter(student => student.class === classType);
+  console.log(`Storage: Retrieved students for class ${classType}:`, students);
+  return students;
 }
 
 export function addStudent(student: Omit<Student, "id">): Student {
+  console.log("Storage: Adding student:", student);
+  
   const students = getStudents();
   const newStudent: Student = {
     id: uuidv4(),
     ...student
   };
   
-  setItems(STORAGE_KEYS.STUDENTS, [...students, newStudent]);
+  const updatedStudents = [...students, newStudent];
+  setItems(STORAGE_KEYS.STUDENTS, updatedStudents);
+  
+  console.log("Storage: Student added successfully:", newStudent);
+  console.log("Storage: Total students now:", updatedStudents.length);
+  
   return newStudent;
 }
 
