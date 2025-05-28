@@ -3,8 +3,6 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { SignupForm } from "@/components/auth/SignupForm";
 import { useAuth } from "@/contexts/AuthContext";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { InfoIcon } from "lucide-react";
 
 export default function Signup() {
   const { user } = useAuth();
@@ -32,13 +30,6 @@ export default function Signup() {
             Join the S.P.D.M. College Portal
           </p>
         </div>
-        
-        <Alert className="mb-4 max-w-md">
-          <InfoIcon className="h-4 w-4" />
-          <AlertDescription>
-            Students can select their class during registration. Teachers will need class assignment by an administrator.
-          </AlertDescription>
-        </Alert>
         
         <SignupForm />
       </div>
