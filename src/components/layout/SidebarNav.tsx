@@ -25,26 +25,27 @@ export function SidebarNav() {
     { href: "/dashboard", label: "Dashboard" },
     { href: "/manage-teachers", label: "Manage Teachers" },
     { href: "/manage-students", label: "Manage Students" },
-    { href: "/schedule-lectures", label: "Schedule Lectures" },
-    { href: "/results", label: "Results" },
-    { href: "/hall-tickets", label: "Hall Tickets" },
+    { href: "/admin/schedule-lectures", label: "Schedule Lectures" },
+    { href: "/admin/results", label: "Results" },
+    { href: "/admin/hall-tickets", label: "Hall Tickets" },
     { href: "/calendar", label: "Calendar" },
-    { href: "/attendance-reports", label: "Attendance Reports" },
+    { href: "/admin/attendance-reports", label: "Attendance Reports" },
   ];
 
   const teacherMenuItems = [
     { href: "/dashboard", label: "Dashboard" },
-    { href: "/schedule-lectures", label: "Schedule Lectures" },
-    { href: "/mark-attendance", label: "Mark Attendance" },
-    { href: "/attendance-reports", label: "Attendance Reports" },
+    { href: "/teacher/schedule-lectures", label: "Schedule Lectures" },
+    { href: "/teacher/mark-attendance", label: "Mark Attendance" },
+    { href: "/teacher/attendance-reports", label: "Attendance Reports" },
+    { href: "/teacher/view-students", label: "View Students" },
     { href: "/calendar", label: "Calendar" },
   ];
 
   const studentMenuItems = [
     { href: "/dashboard", label: "Dashboard" },
-    { href: "/view-attendance", label: "View Attendance" },
-    { href: "/results", label: "Results" },
-    { href: "/hall-tickets", label: "Hall Tickets" },
+    { href: "/student/view-attendance", label: "View Attendance" },
+    { href: "/student/results", label: "Results" },
+    { href: "/student/hall-tickets", label: "Hall Tickets" },
     { href: "/calendar", label: "Calendar" },
   ];
 
