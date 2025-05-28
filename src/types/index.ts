@@ -1,4 +1,3 @@
-
 import { ROLE, CLASS_OPTIONS, EVENT_TYPES } from "@/lib/constants";
 
 export type Role = typeof ROLE[keyof typeof ROLE];
@@ -13,6 +12,8 @@ export interface User {
   email: string;
   role: Role;
   classes?: ClassType[];
+  class?: ClassType;
+  mobile?: string;
 }
 
 export interface Student {

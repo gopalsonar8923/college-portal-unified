@@ -24,7 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { ROLE } from "@/lib/constants";
+import { ROLE, CLASS_OPTIONS } from "@/lib/constants";
 import { useAuth } from "@/contexts/AuthContext";
 import { Role } from "@/types";
 
@@ -34,9 +34,19 @@ const formSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters"),
   confirmPassword: z.string().min(6, "Please confirm your password"),
   role: z.enum([ROLE.ADMIN, ROLE.TEACHER, ROLE.STUDENT]),
+  class: z.string().optional(),
+  mobile: z.string().optional(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords do not match",
   path: ["confirmPassword"],
+}).refine((data) => {
+  if (data.role === ROLE.STUDENT && !data.class) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Class selection is required for students",
+  path: ["class"],
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -54,8 +64,12 @@ export function SignupForm() {
       password: "",
       confirmPassword: "",
       role: ROLE.STUDENT,
+      class: "",
+      mobile: "",
     },
   });
+
+  const selectedRole = form.watch("role");
 
   const onSubmit = async (data: FormData) => {
     setIsLoading(true);
@@ -67,16 +81,15 @@ export function SignupForm() {
         password: data.password,
         role: data.role as Role,
         classes: data.role === ROLE.TEACHER ? [] : undefined,
-        class: data.role === ROLE.STUDENT ? "fy-bsc" : undefined
+        class: data.role === ROLE.STUDENT ? data.class : undefined,
+        mobile: data.mobile || ""
       };
       
       const success = await addUser(userData);
       
       if (success) {
         // Provide specific guidance based on role
-        if (data.role === ROLE.STUDENT) {
-          toast.info("You've been assigned to First Year BSc class by default. An administrator can update this later.");
-        } else if (data.role === ROLE.TEACHER) {
+        if (data.role === ROLE.TEACHER) {
           toast.info("An administrator will need to assign your teaching classes after login.");
         }
         navigate("/login");
@@ -177,6 +190,52 @@ export function SignupForm() {
                 </FormItem>
               )}
             />
+            
+            {selectedRole === ROLE.STUDENT && (
+              <>
+                <FormField
+                  control={form.control}
+                  name="class"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Class *</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select your class" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {CLASS_OPTIONS.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="mobile"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Mobile Number</FormLabel>
+                      <FormControl>
+                        <Input placeholder="1234567890" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </>
+            )}
+            
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? "Creating Account..." : "Sign Up"}
             </Button>

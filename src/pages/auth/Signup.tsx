@@ -36,7 +36,7 @@ export default function Signup() {
         <Alert className="mb-4 max-w-md">
           <InfoIcon className="h-4 w-4" />
           <AlertDescription>
-            Students will be assigned to First Year BSc by default. Teachers will need class assignment by an administrator.
+            Students can select their class during registration. Teachers will need class assignment by an administrator.
           </AlertDescription>
         </Alert>
         

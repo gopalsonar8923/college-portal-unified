@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -18,6 +19,7 @@ import DashboardPage from "@/pages/Dashboard";
 // Admin Pages
 import ManageTeachersPage from "@/pages/admin/ManageTeachers";
 import ManageStudentsPage from "@/pages/admin/ManageStudents";
+import ClassStatisticsPage from "@/pages/admin/ClassStatistics";
 import ScheduleLecturesPage from "@/pages/admin/ScheduleLectures";
 import AdminResultsPage from "@/pages/admin/Results";
 import AdminHallTicketsPage from "@/pages/admin/HallTickets";
@@ -27,6 +29,7 @@ import AdminAttendanceReportsPage from "@/pages/admin/AttendanceReports";
 import TeacherScheduleLecturesPage from "@/pages/teacher/ScheduleLectures";
 import MarkAttendancePage from "@/pages/teacher/MarkAttendance";
 import TeacherAttendanceReportsPage from "@/pages/teacher/AttendanceReports";
+import ViewStudentsPage from "@/pages/teacher/ViewStudents";
 
 // Student Pages
 import ViewAttendancePage from "@/pages/student/ViewAttendance";
@@ -69,6 +72,10 @@ const App = () => (
             <Route 
               path="/manage-students" 
               element={<ProtectedRoute element={<ManageStudentsPage />} allowedRoles={[ROLE.ADMIN]} />} 
+            />
+            <Route 
+              path="/class-statistics" 
+              element={<ProtectedRoute element={<ClassStatisticsPage />} allowedRoles={[ROLE.ADMIN]} />} 
             />
             <Route 
               path="/admin/schedule-lectures" 
@@ -117,6 +124,10 @@ const App = () => (
             <Route 
               path="/teacher/attendance-reports" 
               element={<ProtectedRoute element={<TeacherAttendanceReportsPage />} allowedRoles={[ROLE.TEACHER]} />} 
+            />
+            <Route 
+              path="/teacher/view-students" 
+              element={<ProtectedRoute element={<ViewStudentsPage />} allowedRoles={[ROLE.TEACHER]} />} 
             />
             
             {/* To support existing URLs */}
