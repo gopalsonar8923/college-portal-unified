@@ -28,7 +28,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { ScheduledEvent, ClassType } from "@/types";
-import { CLASS_OPTIONS, EVENT_TYPES, SUBJECTS } from "@/lib/constants";
+import { CLASS_OPTIONS, EVENT_TYPES } from "@/lib/constants";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 
@@ -91,7 +91,6 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
   });
   
   const eventType = form.watch("type");
-  const selectedClass = form.watch("class");
 
   function formatTimeForInput(date: Date): string {
     return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
@@ -315,39 +314,23 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
               )}
             />
             
-            {selectedClass && (
-              <FormField
-                control={form.control}
-                name="subject"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Subject</FormLabel>
-                    <Select 
-                      onValueChange={field.onChange} 
-                      value={field.value || undefined} 
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select subject" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {(SUBJECTS as any)[selectedClass]?.map((subject: string) => (
-                          <SelectItem key={subject} value={subject}>
-                            {subject}
-                          </SelectItem>
-                        )) || (
-                          <SelectItem value="no-subjects" disabled>
-                            No subjects available
-                          </SelectItem>
-                        )}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
+            <FormField
+              control={form.control}
+              name="subject"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Subject</FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder="Enter subject name" 
+                      {...field} 
+                      value={field.value || ""}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </>
         )}
         
