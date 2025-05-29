@@ -8,36 +8,9 @@ import { addStudent } from "@/lib/storage";
 const USER_STORAGE_KEY = "college_portal_user";
 const USERS_STORAGE_KEY = "college_portal_users";
 
-// Default users for testing
-const defaultUsers = [
-  { 
-    id: "admin1", 
-    name: "Admin User", 
-    email: "admin@spdm.edu", 
-    password: "admin123", 
-    role: ROLE.ADMIN 
-  },
-  { 
-    id: "teacher1", 
-    name: "John Teacher", 
-    email: "teacher@spdm.edu", 
-    password: "teacher123", 
-    role: ROLE.TEACHER,
-    classes: ["fy-bsc", "sy-bsc"] 
-  },
-  { 
-    id: "student1", 
-    name: "Alice Student", 
-    email: "student@spdm.edu", 
-    password: "student123", 
-    role: ROLE.STUDENT,
-    class: "fy-bsc"
-  }
-];
-
-// Initialize users in local storage if not present
+// Initialize users in local storage with empty array if not present
 if (!localStorage.getItem(USERS_STORAGE_KEY)) {
-  localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(defaultUsers));
+  localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify([]));
 }
 
 interface AuthContextType {

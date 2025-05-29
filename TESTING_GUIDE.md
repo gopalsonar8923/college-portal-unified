@@ -4,25 +4,16 @@
 ## Application Overview
 This is a comprehensive college management system with role-based access for Students, Teachers, and Administrators.
 
-## Test Accounts
-The application comes with pre-configured test accounts:
+## Getting Started
+The application starts with no pre-configured accounts. You'll need to create your own accounts through the signup process.
 
-### Admin Account
-- **Email:** admin@spdm.edu
-- **Password:** admin123
-- **Role:** Administrator
-
-### Teacher Account
-- **Email:** teacher@spdm.edu
-- **Password:** teacher123
-- **Role:** Teacher
-- **Classes:** FY BSc, SY BSc
-
-### Student Account
-- **Email:** student@spdm.edu
-- **Password:** student123
-- **Role:** Student
-- **Class:** FY BSc
+### Creating Your First Account
+1. Navigate to `/signup`
+2. Fill in the registration form
+3. Select your role (Student, Teacher, or Administrator)
+4. For students, select your class
+5. Complete the signup process
+6. Use `/login` to access your account
 
 ## Testing Scenarios
 
@@ -38,7 +29,7 @@ The application comes with pre-configured test accounts:
 
 #### Login Process
 1. Navigate to `/login`
-2. Test login with each role
+2. Test login with each role you've created
 3. Verify invalid credentials handling
 4. Test role-based redirects to dashboard
 
@@ -226,4 +217,12 @@ Test on:
 - Safari (latest)
 - Edge (latest)
 
-This comprehensive testing guide should help verify all functionality works as expected!
+## Recommended Testing Flow
+1. Create an Admin account first
+2. Use Admin to create Teacher and Student accounts
+3. Test all Admin functionality
+4. Login as Teacher and test Teacher features
+5. Login as Student and test Student features
+6. Test cross-role data consistency
+
+This comprehensive testing guide should help verify all functionality works as expected with your own custom accounts!
