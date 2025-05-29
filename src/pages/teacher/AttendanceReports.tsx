@@ -85,36 +85,39 @@ const AttendanceReportsPage = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Filter Reports</CardTitle>
+            <CardTitle>Filter Options</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-2">Select Class</label>
+                <label className="block text-sm font-medium mb-1">Select Class</label>
                 <Select value={selectedClass} onValueChange={setSelectedClass}>
                   <SelectTrigger>
                     <SelectValue placeholder="Choose a class" />
                   </SelectTrigger>
                   <SelectContent>
-                    {teacherClasses.map(className => (
-                      <SelectItem key={className} value={className}>
-                        {CLASS_OPTIONS.find(c => c.value === className)?.label || className}
-                      </SelectItem>
-                    ))}
+                    {teacherClasses.map((classValue) => {
+                      const classOption = CLASS_OPTIONS.find(option => option.value === classValue);
+                      return (
+                        <SelectItem key={classValue} value={classValue}>
+                          {classOption?.label || classValue}
+                        </SelectItem>
+                      );
+                    })}
                   </SelectContent>
                 </Select>
               </div>
-              
+
               {subjects.length > 0 && (
                 <div>
-                  <label className="block text-sm font-medium mb-2">Select Subject (Optional)</label>
+                  <label className="block text-sm font-medium mb-1">Select Subject (Optional)</label>
                   <Select value={selectedSubject} onValueChange={setSelectedSubject}>
                     <SelectTrigger>
                       <SelectValue placeholder="All subjects" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Subjects</SelectItem>
-                      {subjects.map(subject => (
+                      <SelectItem value="">All subjects</SelectItem>
+                      {subjects.map((subject) => (
                         <SelectItem key={subject} value={subject}>
                           {subject}
                         </SelectItem>
@@ -131,7 +134,7 @@ const AttendanceReportsPage = () => {
           <Card>
             <CardHeader>
               <CardTitle>
-                Attendance Summary - {CLASS_OPTIONS.find(c => c.value === selectedClass)?.label}
+                Attendance Summary - {CLASS_OPTIONS.find(option => option.value === selectedClass)?.label}
                 {selectedSubject && ` - ${selectedSubject}`}
               </CardTitle>
             </CardHeader>
@@ -153,7 +156,7 @@ const AttendanceReportsPage = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {students.map(student => {
+                    {students.map((student) => {
                       const stats = getAttendanceStats(student.id);
                       return (
                         <TableRow key={student.id}>
@@ -175,6 +178,17 @@ const AttendanceReportsPage = () => {
                   </TableBody>
                 </Table>
               )}
+            </CardContent>
+          </Card>
+        )}
+
+        {!selectedClass && (
+          <Card>
+            <CardContent className="text-center py-8">
+              <CalendarIcon className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+              <p className="text-muted-foreground">
+                Please select a class to view attendance reports.
+              </p>
             </CardContent>
           </Card>
         )}
