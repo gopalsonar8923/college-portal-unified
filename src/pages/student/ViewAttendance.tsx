@@ -9,23 +9,42 @@ import { Progress } from "@/components/ui/progress";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { useAuth } from "@/contexts/AuthContext";
-import { getAttendanceByStudent } from "@/lib/storage";
-import { Attendance } from "@/types";
+import { getAttendanceByStudent, getStudents } from "@/lib/storage";
+import { Attendance, Student } from "@/types";
 
 const ViewAttendancePage = () => {
   const { user } = useAuth();
   const [attendanceData, setAttendanceData] = useState<Attendance[]>([]);
   const [selectedSubject, setSelectedSubject] = useState<string>("");
   const [subjects, setSubjects] = useState<string[]>([]);
+  const [studentRecord, setStudentRecord] = useState<Student | null>(null);
 
   useEffect(() => {
-    if (user?.id) {
-      const studentAttendance = getAttendanceByStudent(user.id);
-      setAttendanceData(studentAttendance);
+    console.log("ViewAttendance: Current user:", user);
+    
+    if (user?.email) {
+      // Find the student record by email
+      const allStudents = getStudents();
+      console.log("ViewAttendance: All students:", allStudents);
       
-      // Get unique subjects
-      const uniqueSubjects = [...new Set(studentAttendance.map(a => a.subject))];
-      setSubjects(uniqueSubjects);
+      const foundStudent = allStudents.find(student => student.email === user.email);
+      console.log("ViewAttendance: Found student record:", foundStudent);
+      
+      if (foundStudent) {
+        setStudentRecord(foundStudent);
+        
+        // Get attendance using the student's ID from the students table
+        const studentAttendance = getAttendanceByStudent(foundStudent.id);
+        console.log("ViewAttendance: Student attendance:", studentAttendance);
+        
+        setAttendanceData(studentAttendance);
+        
+        // Get unique subjects
+        const uniqueSubjects = [...new Set(studentAttendance.map(a => a.subject))];
+        setSubjects(uniqueSubjects);
+      } else {
+        console.log("ViewAttendance: No student record found for email:", user.email);
+      }
     }
   }, [user]);
 
@@ -63,10 +82,42 @@ const ViewAttendancePage = () => {
   const overallStats = getOverallStats();
   const subjectStats = getSubjectStats();
 
+  // Show message if no student record found
+  if (user && !studentRecord) {
+    return (
+      <DashboardLayout>
+        <div className="space-y-6">
+          <h1 className="text-3xl font-bold">My Attendance</h1>
+          <Card>
+            <CardContent className="text-center py-8">
+              <p className="text-muted-foreground">
+                No student record found. Please contact your administrator to ensure your account is properly set up.
+              </p>
+              <p className="text-sm text-muted-foreground mt-2">
+                Email: {user.email}
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
         <h1 className="text-3xl font-bold">My Attendance</h1>
+
+        {/* Show student info */}
+        {studentRecord && (
+          <Card>
+            <CardContent className="pt-6">
+              <div className="text-sm text-muted-foreground">
+                <strong>Student:</strong> {studentRecord.name} | <strong>Class:</strong> {studentRecord.class}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Overall Statistics */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -159,6 +210,7 @@ const ViewAttendancePage = () => {
             {filteredAttendance.length === 0 ? (
               <p className="text-center text-muted-foreground py-8">
                 No attendance records found.
+                {attendanceData.length === 0 && " Please contact your teacher to mark attendance for your classes."}
               </p>
             ) : (
               <Table>
