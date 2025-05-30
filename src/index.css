@@ -93,6 +93,11 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    overflow-x: hidden;
+  }
+
+  html {
+    overflow-x: hidden;
   }
 }
 
@@ -108,6 +113,12 @@
   }
 }
 
+@media (max-width: 480px) {
+  .college-logo {
+    height: 35px;
+  }
+}
+
 .fade-in {
   animation: fadeIn 0.5s ease-in;
 }
@@ -119,8 +130,8 @@
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -134,4 +145,77 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--primary) / 0.8);
+}
+
+/* Mobile-specific improvements */
+@media (max-width: 768px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* Ensure cards are properly spaced on mobile */
+  .card {
+    margin-bottom: 1rem;
+  }
+
+  /* Better touch targets */
+  button, a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Prevent horizontal overflow */
+  .overflow-x-auto {
+    scrollbar-width: thin;
+  }
+}
+
+/* Safe area support for mobile devices */
+@supports (padding: max(0px)) {
+  .safe-area-inset {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+}
+
+/* Improved mobile dropdown positioning */
+.dropdown-content {
+  max-width: 90vw;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+/* Better mobile form inputs */
+@media (max-width: 640px) {
+  input, textarea, select {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+}
+
+/* Responsive text sizing */
+@media (max-width: 480px) {
+  .text-3xl {
+    font-size: 1.75rem;
+  }
+  
+  .text-2xl {
+    font-size: 1.5rem;
+  }
+}
+
+/* Mobile-friendly spacing */
+@media (max-width: 640px) {
+  .space-y-6 > * + * {
+    margin-top: 1.5rem;
+  }
+  
+  .gap-6 {
+    gap: 1rem;
+  }
+  
+  .p-6 {
+    padding: 1rem;
+  }
 }
