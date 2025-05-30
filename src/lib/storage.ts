@@ -19,6 +19,32 @@ const STORAGE_KEYS = {
   EVENTS: "college_portal_events"
 };
 
+// Clear all data and initialize fresh
+export function initializeFreshApplication() {
+  console.log("Initializing fresh application...");
+  
+  // Clear all existing data
+  Object.values(STORAGE_KEYS).forEach(key => {
+    localStorage.removeItem(key);
+  });
+  
+  // Clear user data
+  localStorage.removeItem("college_portal_user");
+  localStorage.removeItem("college_portal_users");
+  localStorage.removeItem("college_portal_files");
+  
+  // Initialize with empty arrays
+  Object.values(STORAGE_KEYS).forEach(key => {
+    localStorage.setItem(key, JSON.stringify([]));
+  });
+  
+  // Initialize users array
+  localStorage.setItem("college_portal_users", JSON.stringify([]));
+  
+  console.log("Fresh application initialized successfully!");
+  toast.success("Application reset to fresh state!");
+}
+
 // Initialize localStorage with empty arrays if not present
 Object.values(STORAGE_KEYS).forEach(key => {
   if (!localStorage.getItem(key)) {
@@ -153,7 +179,9 @@ export function getAttendanceByClass(classType: string): Attendance[] {
 }
 
 export function getAttendanceByStudent(studentId: string): Attendance[] {
-  return getAttendance().filter(a => a.studentId === studentId);
+  const attendance = getAttendance().filter(a => a.studentId === studentId);
+  console.log(`Storage: Retrieved attendance for student ${studentId}:`, attendance);
+  return attendance;
 }
 
 export function addAttendance(attendance: Omit<Attendance, "id">): Attendance {
@@ -163,6 +191,7 @@ export function addAttendance(attendance: Omit<Attendance, "id">): Attendance {
     ...attendance
   };
   
+  console.log("Storage: Adding attendance record:", newAttendance);
   setItems(STORAGE_KEYS.ATTENDANCE, [...records, newAttendance]);
   return newAttendance;
 }

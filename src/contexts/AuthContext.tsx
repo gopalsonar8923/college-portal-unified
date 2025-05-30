@@ -1,17 +1,13 @@
+
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Role, User, Student } from "@/types";
 import { ROLE } from "@/lib/constants";
-import { addStudent } from "@/lib/storage";
+import { addStudent, initializeFreshApplication } from "@/lib/storage";
 
 // Mock storage functionality until integrated with a backend
 const USER_STORAGE_KEY = "college_portal_user";
 const USERS_STORAGE_KEY = "college_portal_users";
-
-// Initialize users in local storage with empty array if not present
-if (!localStorage.getItem(USERS_STORAGE_KEY)) {
-  localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify([]));
-}
 
 interface AuthContextType {
   user: User | null;
@@ -22,6 +18,7 @@ interface AuthContextType {
   addUser: (user: any) => Promise<boolean>;
   updateUser: (id: string, userData: Partial<User>) => Promise<boolean>;
   deleteUser: (id: string) => Promise<boolean>;
+  resetApplication: () => void;
 }
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
@@ -33,6 +30,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
   
   useEffect(() => {
+    // Initialize users storage if not present
+    if (!localStorage.getItem(USERS_STORAGE_KEY)) {
+      localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify([]));
+    }
+    
     // Check if user is already logged in
     const storedUser = localStorage.getItem(USER_STORAGE_KEY);
     if (storedUser) {
@@ -66,7 +68,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         toast.success(`Welcome back, ${userData.name}!`);
         return true;
       } else {
-        toast.error("Invalid credentials. Please try again.");
+        toast.error("Invalid credentials. Please check your email, password, and role.");
         return false;
       }
     } catch (error) {
@@ -96,7 +98,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
 
       const newUser = {
-        id: `user_${Date.now()}`,
+        id: `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         ...userData
       };
 
@@ -116,7 +118,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           name: newUser.name,
           email: newUser.email,
           class: newUser.class,
-          mobile: newUser.mobile || ""
+          mobile: newUser.mobile || "",
+          age: newUser.age || undefined
         };
         
         const addedStudent = addStudent(studentData);
@@ -173,6 +176,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const resetApplication = () => {
+    try {
+      // Clear current user
+      setUser(null);
+      
+      // Initialize fresh application
+      initializeFreshApplication();
+      
+      // Redirect to login
+      window.location.href = "/login";
+    } catch (error) {
+      console.error("Reset application error:", error);
+      toast.error("An error occurred while resetting the application.");
+    }
+  };
+
   return (
     <AuthContext.Provider value={{ 
       user, 
@@ -182,7 +201,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       getUsers,
       addUser,
       updateUser,
-      deleteUser
+      deleteUser,
+      resetApplication
     }}>
       {children}
     </AuthContext.Provider>
