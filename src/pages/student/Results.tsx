@@ -13,18 +13,27 @@ const ResultsPage = () => {
   const { user } = useAuth();
 
   useEffect(() => {
+    console.log("Loading results for user:", user);
     if (user && (user as any).class) {
       const studentClass = (user as any).class;
+      console.log("Student class:", studentClass);
       const classResults = getResultsByClass(studentClass);
+      console.log("Found results:", classResults);
       setResults(classResults);
       setLoading(false);
     } else {
+      console.log("No user or class found");
       setLoading(false);
     }
   }, [user]);
 
   const handleDownload = (result: Result) => {
-    downloadFile(result.fileUrl, `${result.title}.pdf`);
+    try {
+      console.log("Student downloading result:", result.title);
+      downloadFile(result.fileUrl, `${result.title}.pdf`);
+    } catch (error) {
+      console.error("Failed to download result:", error);
+    }
   };
 
   return (

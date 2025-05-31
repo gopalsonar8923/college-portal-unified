@@ -16,7 +16,8 @@ const STORAGE_KEYS = {
   ATTENDANCE: "college_portal_attendance",
   RESULTS: "college_portal_results",
   HALL_TICKETS: "college_portal_hall_tickets",
-  EVENTS: "college_portal_events"
+  EVENTS: "college_portal_events",
+  FILES: "college_portal_files"
 };
 
 // Clear all data and initialize fresh
@@ -31,11 +32,10 @@ export function initializeFreshApplication() {
   // Clear user data
   localStorage.removeItem("college_portal_user");
   localStorage.removeItem("college_portal_users");
-  localStorage.removeItem("college_portal_files");
   
   // Initialize with empty arrays
   Object.values(STORAGE_KEYS).forEach(key => {
-    localStorage.setItem(key, JSON.stringify([]));
+    localStorage.setItem(key, JSON.stringify(key === STORAGE_KEYS.FILES ? {} : []));
   });
   
   // Initialize users array
@@ -48,7 +48,7 @@ export function initializeFreshApplication() {
 // Initialize localStorage with empty arrays if not present
 Object.values(STORAGE_KEYS).forEach(key => {
   if (!localStorage.getItem(key)) {
-    localStorage.setItem(key, JSON.stringify([]));
+    localStorage.setItem(key, JSON.stringify(key === STORAGE_KEYS.FILES ? {} : []));
   }
 });
 
@@ -259,6 +259,7 @@ export function addResult(result: Omit<Result, "id">): Result {
     ...result
   };
   
+  console.log("Storage: Adding result:", newResult);
   setItems(STORAGE_KEYS.RESULTS, [...results, newResult]);
   return newResult;
 }
@@ -277,12 +278,17 @@ export function updateResult(id: string, data: Partial<Result>): Result | null {
 }
 
 export function deleteResult(id: string): boolean {
+  console.log("Storage: Deleting result with id:", id);
   const results = getResults();
   const filteredResults = results.filter(r => r.id !== id);
   
-  if (filteredResults.length === results.length) return false;
+  if (filteredResults.length === results.length) {
+    console.log("Storage: Result not found for deletion");
+    return false;
+  }
   
   setItems(STORAGE_KEYS.RESULTS, filteredResults);
+  console.log("Storage: Result deleted successfully");
   return true;
 }
 
@@ -302,6 +308,7 @@ export function addHallTicket(ticket: Omit<HallTicket, "id">): HallTicket {
     ...ticket
   };
   
+  console.log("Storage: Adding hall ticket:", newTicket);
   setItems(STORAGE_KEYS.HALL_TICKETS, [...tickets, newTicket]);
   return newTicket;
 }
@@ -320,12 +327,17 @@ export function updateHallTicket(id: string, data: Partial<HallTicket>): HallTic
 }
 
 export function deleteHallTicket(id: string): boolean {
+  console.log("Storage: Deleting hall ticket with id:", id);
   const tickets = getHallTickets();
   const filteredTickets = tickets.filter(t => t.id !== id);
   
-  if (filteredTickets.length === tickets.length) return false;
+  if (filteredTickets.length === tickets.length) {
+    console.log("Storage: Hall ticket not found for deletion");
+    return false;
+  }
   
   setItems(STORAGE_KEYS.HALL_TICKETS, filteredTickets);
+  console.log("Storage: Hall ticket deleted successfully");
   return true;
 }
 
@@ -372,50 +384,96 @@ export function deleteEvent(id: string): boolean {
   return true;
 }
 
-// File handling (mock implementation)
+// File handling - improved implementation
 export function uploadFile(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     try {
-      // In a real application, this would upload to a server or cloud storage
-      // For now, we'll use a mock URL
-      const objectUrl = URL.createObjectURL(file);
+      console.log("Uploading file:", file.name);
       
-      // Store file metadata in localStorage for persistence
-      const fileStorage = JSON.parse(localStorage.getItem("college_portal_files") || "{}");
-      const fileId = uuidv4();
-      fileStorage[fileId] = {
-        id: fileId,
-        name: file.name,
-        type: file.type,
-        size: file.size,
-        url: objectUrl
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const fileId = uuidv4();
+          const fileStorage = JSON.parse(localStorage.getItem(STORAGE_KEYS.FILES) || "{}");
+          
+          // Store file as base64 data URL for persistence
+          fileStorage[fileId] = {
+            id: fileId,
+            name: file.name,
+            type: file.type,
+            size: file.size,
+            data: reader.result, // This is a data URL
+            uploadDate: new Date().toISOString()
+          };
+          
+          localStorage.setItem(STORAGE_KEYS.FILES, JSON.stringify(fileStorage));
+          console.log("File uploaded successfully with ID:", fileId);
+          
+          resolve(`file://${fileId}`);
+        } catch (error) {
+          console.error("Error storing file:", error);
+          reject(error);
+        }
       };
-      localStorage.setItem("college_portal_files", JSON.stringify(fileStorage));
       
-      setTimeout(() => {
-        resolve(`file://${fileId}`);
-      }, 500); // Simulate network delay
+      reader.onerror = () => {
+        console.error("Error reading file:", reader.error);
+        reject(reader.error);
+      };
+      
+      reader.readAsDataURL(file);
     } catch (error) {
+      console.error("Error uploading file:", error);
       reject(error);
     }
   });
 }
 
-export function getFileUrl(fileId: string): string | null {
-  if (!fileId.startsWith("file://")) return fileId;
+export function getFileUrl(fileUrl: string): string | null {
+  if (!fileUrl || !fileUrl.startsWith("file://")) {
+    return fileUrl;
+  }
   
-  const id = fileId.replace("file://", "");
-  const fileStorage = JSON.parse(localStorage.getItem("college_portal_files") || "{}");
-  return fileStorage[id]?.url || null;
+  try {
+    const fileId = fileUrl.replace("file://", "");
+    const fileStorage = JSON.parse(localStorage.getItem(STORAGE_KEYS.FILES) || "{}");
+    const fileData = fileStorage[fileId];
+    
+    if (!fileData || !fileData.data) {
+      console.error("File not found or has no data:", fileId);
+      return null;
+    }
+    
+    return fileData.data; // Return the data URL
+  } catch (error) {
+    console.error("Error getting file URL:", error);
+    return null;
+  }
 }
 
 export function downloadFile(fileUrl: string, fileName: string): void {
-  const url = getFileUrl(fileUrl) || fileUrl;
+  console.log("Downloading file:", fileName, "from URL:", fileUrl);
   
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = fileName;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+  try {
+    const url = getFileUrl(fileUrl);
+    
+    if (!url) {
+      console.error("Could not get file URL for download");
+      toast.error("File not found or corrupted");
+      return;
+    }
+    
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    
+    console.log("File download initiated successfully");
+    toast.success("Download started");
+  } catch (error) {
+    console.error("Error downloading file:", error);
+    toast.error("Failed to download file");
+  }
 }

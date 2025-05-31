@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { CLASS_OPTIONS } from "@/lib/constants";
-import { addHallTicket, getHallTicketsByClass } from "@/lib/storage";
+import { addHallTicket, getHallTicketsByClass, deleteHallTicket, downloadFile } from "@/lib/storage";
 import { toast } from "sonner";
 import { HallTicket } from "@/types";
 
@@ -36,8 +36,10 @@ const HallTicketsPage = () => {
   };
 
   const handleFileUploaded = (url: string, name: string) => {
+    console.log("File uploaded:", name, url);
     setFileUrl(url);
     setFileName(name);
+    toast.success("File uploaded successfully");
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -49,6 +51,8 @@ const HallTicketsPage = () => {
     }
 
     try {
+      console.log("Adding hall ticket:", { title, selectedClass, examDate, fileUrl });
+      
       const newHallTicket = addHallTicket({
         title,
         class: selectedClass as any,
@@ -76,16 +80,33 @@ const HallTicketsPage = () => {
 
   const handleDelete = (id: string) => {
     try {
-      const storage = require("@/lib/storage");
-      storage.deleteHallTicket(id);
-      toast.success("Hall ticket deleted successfully");
+      console.log("Deleting hall ticket with ID:", id);
+      const success = deleteHallTicket(id);
       
-      // Refresh hall tickets list
-      const updatedHallTickets = getHallTicketsByClass(selectedClass);
-      setHallTickets(updatedHallTickets);
+      if (success) {
+        toast.success("Hall ticket deleted successfully");
+        
+        // Refresh hall tickets list
+        if (selectedClass) {
+          const updatedHallTickets = getHallTicketsByClass(selectedClass);
+          setHallTickets(updatedHallTickets);
+        }
+      } else {
+        toast.error("Failed to delete hall ticket - not found");
+      }
     } catch (error) {
       console.error("Failed to delete hall ticket:", error);
       toast.error("Failed to delete hall ticket");
+    }
+  };
+
+  const handleDownload = (ticket: HallTicket) => {
+    try {
+      console.log("Downloading hall ticket:", ticket.title);
+      downloadFile(ticket.fileUrl, `${ticket.title}.pdf`);
+    } catch (error) {
+      console.error("Failed to download hall ticket:", error);
+      toast.error("Failed to download hall ticket");
     }
   };
 
@@ -203,10 +224,7 @@ const HallTicketsPage = () => {
                         <Button 
                           variant="outline" 
                           size="sm" 
-                          onClick={() => {
-                            const storage = require("@/lib/storage");
-                            storage.downloadFile(ticket.fileUrl, `${ticket.title}.pdf`);
-                          }}
+                          onClick={() => handleDownload(ticket)}
                         >
                           Download
                         </Button>

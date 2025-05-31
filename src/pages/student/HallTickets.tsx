@@ -13,18 +13,27 @@ const HallTicketsPage = () => {
   const { user } = useAuth();
 
   useEffect(() => {
+    console.log("Loading hall tickets for user:", user);
     if (user && (user as any).class) {
       const studentClass = (user as any).class;
+      console.log("Student class:", studentClass);
       const classHallTickets = getHallTicketsByClass(studentClass);
+      console.log("Found hall tickets:", classHallTickets);
       setHallTickets(classHallTickets);
       setLoading(false);
     } else {
+      console.log("No user or class found");
       setLoading(false);
     }
   }, [user]);
 
   const handleDownload = (ticket: HallTicket) => {
-    downloadFile(ticket.fileUrl, `${ticket.title}.pdf`);
+    try {
+      console.log("Student downloading hall ticket:", ticket.title);
+      downloadFile(ticket.fileUrl, `${ticket.title}.pdf`);
+    } catch (error) {
+      console.error("Failed to download hall ticket:", error);
+    }
   };
 
   return (

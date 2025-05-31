@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { CLASS_OPTIONS } from "@/lib/constants";
-import { addResult, getResultsByClass } from "@/lib/storage";
+import { addResult, getResultsByClass, deleteResult, downloadFile } from "@/lib/storage";
 import { toast } from "sonner";
 import { Result } from "@/types";
 
@@ -36,8 +36,10 @@ const ResultsPage = () => {
   };
 
   const handleFileUploaded = (url: string, name: string) => {
+    console.log("File uploaded:", name, url);
     setFileUrl(url);
     setFileName(name);
+    toast.success("File uploaded successfully");
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -49,6 +51,8 @@ const ResultsPage = () => {
     }
 
     try {
+      console.log("Adding result:", { title, selectedClass, semester, fileUrl });
+      
       const newResult = addResult({
         title,
         class: selectedClass as any,
@@ -76,16 +80,33 @@ const ResultsPage = () => {
 
   const handleDelete = (id: string) => {
     try {
-      const storage = require("@/lib/storage");
-      storage.deleteResult(id);
-      toast.success("Result deleted successfully");
+      console.log("Deleting result with ID:", id);
+      const success = deleteResult(id);
       
-      // Refresh results list
-      const updatedResults = getResultsByClass(selectedClass);
-      setResults(updatedResults);
+      if (success) {
+        toast.success("Result deleted successfully");
+        
+        // Refresh results list
+        if (selectedClass) {
+          const updatedResults = getResultsByClass(selectedClass);
+          setResults(updatedResults);
+        }
+      } else {
+        toast.error("Failed to delete result - not found");
+      }
     } catch (error) {
       console.error("Failed to delete result:", error);
       toast.error("Failed to delete result");
+    }
+  };
+
+  const handleDownload = (result: Result) => {
+    try {
+      console.log("Downloading result:", result.title);
+      downloadFile(result.fileUrl, `${result.title}.pdf`);
+    } catch (error) {
+      console.error("Failed to download result:", error);
+      toast.error("Failed to download result");
     }
   };
 
@@ -203,10 +224,7 @@ const ResultsPage = () => {
                         <Button 
                           variant="outline" 
                           size="sm" 
-                          onClick={() => {
-                            const storage = require("@/lib/storage");
-                            storage.downloadFile(result.fileUrl, `${result.title}.pdf`);
-                          }}
+                          onClick={() => handleDownload(result)}
                         >
                           Download
                         </Button>
