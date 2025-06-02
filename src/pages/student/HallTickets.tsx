@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { getHallTicketsByClass, downloadFile } from "@/lib/storage";
 import { useAuth } from "@/contexts/AuthContext";
 import { HallTicket } from "@/types";
+import { toast } from "sonner";
 
 const HallTicketsPage = () => {
   const [hallTickets, setHallTickets] = useState<HallTicket[]>([]);
@@ -13,26 +14,28 @@ const HallTicketsPage = () => {
   const { user } = useAuth();
 
   useEffect(() => {
-    console.log("Loading hall tickets for user:", user);
     if (user && (user as any).class) {
       const studentClass = (user as any).class;
-      console.log("Student class:", studentClass);
-      const classHallTickets = getHallTicketsByClass(studentClass);
-      console.log("Found hall tickets:", classHallTickets);
-      setHallTickets(classHallTickets);
+      try {
+        const classHallTickets = getHallTicketsByClass(studentClass);
+        setHallTickets(classHallTickets);
+      } catch (error) {
+        console.error("Failed to load hall tickets:", error);
+        toast.error("Failed to load hall tickets");
+      }
       setLoading(false);
     } else {
-      console.log("No user or class found");
       setLoading(false);
     }
   }, [user]);
 
   const handleDownload = (ticket: HallTicket) => {
     try {
-      console.log("Student downloading hall ticket:", ticket.title);
       downloadFile(ticket.fileUrl, `${ticket.title}.pdf`);
+      toast.success("Download started");
     } catch (error) {
       console.error("Failed to download hall ticket:", error);
+      toast.error("Failed to download hall ticket");
     }
   };
 

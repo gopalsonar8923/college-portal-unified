@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { getResultsByClass, downloadFile } from "@/lib/storage";
 import { useAuth } from "@/contexts/AuthContext";
 import { Result } from "@/types";
+import { toast } from "sonner";
 
 const ResultsPage = () => {
   const [results, setResults] = useState<Result[]>([]);
@@ -13,26 +14,28 @@ const ResultsPage = () => {
   const { user } = useAuth();
 
   useEffect(() => {
-    console.log("Loading results for user:", user);
     if (user && (user as any).class) {
       const studentClass = (user as any).class;
-      console.log("Student class:", studentClass);
-      const classResults = getResultsByClass(studentClass);
-      console.log("Found results:", classResults);
-      setResults(classResults);
+      try {
+        const classResults = getResultsByClass(studentClass);
+        setResults(classResults);
+      } catch (error) {
+        console.error("Failed to load results:", error);
+        toast.error("Failed to load results");
+      }
       setLoading(false);
     } else {
-      console.log("No user or class found");
       setLoading(false);
     }
   }, [user]);
 
   const handleDownload = (result: Result) => {
     try {
-      console.log("Student downloading result:", result.title);
       downloadFile(result.fileUrl, `${result.title}.pdf`);
+      toast.success("Download started");
     } catch (error) {
       console.error("Failed to download result:", error);
+      toast.error("Failed to download result");
     }
   };
 

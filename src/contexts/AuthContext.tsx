@@ -1,13 +1,9 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { toast } from "sonner";
 import { Role, User, Student } from "@/types";
 import { ROLE } from "@/lib/constants";
+import { authService } from "@/services/authService";
 import { addStudent, initializeFreshApplication } from "@/lib/storage";
-
-// Mock storage functionality until integrated with a backend
-const USER_STORAGE_KEY = "college_portal_user";
-const USERS_STORAGE_KEY = "college_portal_users";
 
 interface AuthContextType {
   user: User | null;
@@ -30,165 +26,88 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
   
   useEffect(() => {
-    // Initialize users storage if not present
-    if (!localStorage.getItem(USERS_STORAGE_KEY)) {
-      localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify([]));
-    }
-    
-    // Check if user is already logged in
-    const storedUser = localStorage.getItem(USER_STORAGE_KEY);
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
+    // Check if user is already logged in with secure session validation
+    const currentUser = authService.getCurrentUser();
+    setUser(currentUser);
     setLoading(false);
   }, []);
 
-  const getUsers = (role?: Role) => {
-    const users = JSON.parse(localStorage.getItem(USERS_STORAGE_KEY) || '[]');
-    if (role) {
-      return users.filter((u: any) => u.role === role);
-    }
-    return users;
-  };
-
   const login = async (email: string, password: string, role: Role) => {
-    try {
-      const users = getUsers();
-      const found = users.find(
-        (u: any) => u.email === email && u.password === password && u.role === role
-      );
-
-      if (found) {
-        const userData = { ...found };
-        delete userData.password;
-        
-        localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(userData));
-        setUser(userData);
-        
-        toast.success(`Welcome back, ${userData.name}!`);
-        return true;
-      } else {
-        toast.error("Invalid credentials. Please check your email, password, and role.");
-        return false;
-      }
-    } catch (error) {
-      console.error("Login error:", error);
-      toast.error("An error occurred during login.");
-      return false;
+    const success = await authService.login(email, password, role);
+    if (success) {
+      const currentUser = authService.getCurrentUser();
+      setUser(currentUser);
     }
+    return success;
   };
 
   const logout = () => {
-    localStorage.removeItem(USER_STORAGE_KEY);
+    authService.logout();
     setUser(null);
     window.location.href = "/login";
-    toast.info("You have been logged out.");
+  };
+
+  const getUsers = (role?: Role) => {
+    if (!user) return [];
+    
+    try {
+      const users = authService.getAllUsers(user);
+      if (role) {
+        return users.filter((u: any) => u.role === role);
+      }
+      return users;
+    } catch (error) {
+      console.error("Unauthorized access:", error);
+      return [];
+    }
   };
 
   const addUser = async (userData: any) => {
-    try {
-      console.log("AuthContext: Adding user with data:", { ...userData, password: "[HIDDEN]" });
-      
-      const users = getUsers();
-      
-      // Check if user with this email already exists
-      if (users.some((u: any) => u.email === userData.email)) {
-        toast.error("User with this email already exists.");
-        return false;
-      }
-
-      const newUser = {
-        id: `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        ...userData
+    const success = await authService.register(userData);
+    
+    if (success && userData.role === ROLE.STUDENT && userData.class) {
+      // Also add to students list for compatibility
+      const studentData: Omit<Student, "id"> = {
+        name: userData.name,
+        email: userData.email,
+        class: userData.class,
+        mobile: userData.mobile || "",
+        age: userData.age || undefined
       };
-
-      console.log("AuthContext: New user object:", { ...newUser, password: "[HIDDEN]" });
-
-      // Add new user to storage
-      const updatedUsers = [...users, newUser];
-      localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(updatedUsers));
       
-      console.log("AuthContext: User added to users list");
-      
-      // If this is a student, also add to the students list
-      if (newUser.role === ROLE.STUDENT && newUser.class) {
-        console.log("AuthContext: Adding student to students list");
-        
-        const studentData: Omit<Student, "id"> = {
-          name: newUser.name,
-          email: newUser.email,
-          class: newUser.class,
-          mobile: newUser.mobile || "",
-          age: newUser.age || undefined
-        };
-        
-        const addedStudent = addStudent(studentData);
-        console.log("AuthContext: Student added to storage:", addedStudent);
-      }
-      
-      toast.success(`New ${userData.role} account created successfully.`);
-      return true;
-    } catch (error) {
-      console.error("Add user error:", error);
-      toast.error("An error occurred while creating the account.");
-      return false;
+      addStudent(studentData);
     }
+    
+    return success;
   };
 
   const updateUser = async (id: string, userData: Partial<User>) => {
-    try {
-      const users = getUsers();
-      const updatedUsers = users.map((u: any) => 
-        u.id === id ? { ...u, ...userData } : u
-      );
-
-      localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(updatedUsers));
-      
-      // If the current user is being updated, update the stored user as well
-      if (user && user.id === id) {
-        const updatedUser = { ...user, ...userData };
-        localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(updatedUser));
-        setUser(updatedUser);
-      }
-      
-      toast.success("User updated successfully.");
-      return true;
-    } catch (error) {
-      console.error("Update user error:", error);
-      toast.error("An error occurred while updating the user.");
-      return false;
+    if (!user) return false;
+    
+    const success = await authService.updateUser(user, id, userData);
+    
+    // If the current user is being updated, refresh their session
+    if (success && user.id === id) {
+      const updatedUser = authService.getCurrentUser();
+      setUser(updatedUser);
     }
+    
+    return success;
   };
 
   const deleteUser = async (id: string) => {
-    try {
-      const users = getUsers();
-      const updatedUsers = users.filter((u: any) => u.id !== id);
-
-      localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(updatedUsers));
-      
-      toast.success("User deleted successfully.");
-      return true;
-    } catch (error) {
-      console.error("Delete user error:", error);
-      toast.error("An error occurred while deleting the user.");
-      return false;
-    }
+    if (!user) return false;
+    return authService.deleteUser(user, id);
   };
 
   const resetApplication = () => {
     try {
-      // Clear current user
       setUser(null);
-      
-      // Initialize fresh application
+      authService.logout();
       initializeFreshApplication();
-      
-      // Redirect to login
       window.location.href = "/login";
     } catch (error) {
       console.error("Reset application error:", error);
-      toast.error("An error occurred while resetting the application.");
     }
   };
 
