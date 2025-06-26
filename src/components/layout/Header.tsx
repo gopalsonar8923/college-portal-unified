@@ -28,7 +28,7 @@ export function Header() {
         <div className="flex items-center gap-2 min-w-0 flex-1">
           <Link to="/dashboard" className="flex items-center gap-2 min-w-0">
             <img 
-              src="/lovable-uploads/38b0ddb0-037f-484b-8ffa-3a3f4449817f.png" 
+              src="/gopal-uploads/38b0ddb0-037f-484b-8ffa-3a3f4449817f.png" 
               alt="S.P.D.M. College" 
               className="college-logo flex-shrink-0"
             />

@@ -16,7 +16,7 @@ const NotFound = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-college-bg to-white p-4">
       <img 
-        src="/lovable-uploads/38b0ddb0-037f-484b-8ffa-3a3f4449817f.png" 
+        src="/gopal-uploads/38b0ddb0-037f-484b-8ffa-3a3f4449817f.png" 
         alt="S.P.D.M. College" 
         className="w-20 h-auto mb-6"
       />
