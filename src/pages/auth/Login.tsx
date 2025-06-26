@@ -19,7 +19,7 @@ export default function Login() {
       <div className="flex-1 flex flex-col items-center justify-center p-4 bg-gradient-to-b from-college-bg to-white">
         <div className="w-full max-w-md mb-8 flex flex-col items-center">
           <img 
-            src="/gopal-uploads/38b0ddb0-037f-484b-8ffa-3a3f4449817f.png" 
+            src="/lovable-uploads/38b0ddb0-037f-484b-8ffa-3a3f4449817f.png" 
             alt="S.P.D.M. College" 
             className="w-24 h-auto mb-4"
           />
